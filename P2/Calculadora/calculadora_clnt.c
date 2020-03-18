@@ -9,68 +9,122 @@
 /* Default timeout can be changed using clnt_control() */
 static struct timeval TIMEOUT = { 25, 0 };
 
-double *
-suma_1(double a, double b,  CLIENT *clnt)
+float *
+suma_1(float a, float b,  CLIENT *clnt)
 {
 	suma_1_argument arg;
-	static double clnt_res;
+	static float clnt_res;
 
 	memset((char *)&clnt_res, 0, sizeof(clnt_res));
 	arg.a = a;
 	arg.b = b;
 	if (clnt_call (clnt, SUMA, (xdrproc_t) xdr_suma_1_argument, (caddr_t) &arg,
-		(xdrproc_t) xdr_double, (caddr_t) &clnt_res,
+		(xdrproc_t) xdr_float, (caddr_t) &clnt_res,
 		TIMEOUT) != RPC_SUCCESS) {
 		return (NULL);
 	}
 	return (&clnt_res);
 }
 
-double *
-resta_1(double a, double b,  CLIENT *clnt)
+float *
+resta_1(float a, float b,  CLIENT *clnt)
 {
 	resta_1_argument arg;
-	static double clnt_res;
+	static float clnt_res;
 
 	memset((char *)&clnt_res, 0, sizeof(clnt_res));
 	arg.a = a;
 	arg.b = b;
 	if (clnt_call (clnt, RESTA, (xdrproc_t) xdr_resta_1_argument, (caddr_t) &arg,
-		(xdrproc_t) xdr_double, (caddr_t) &clnt_res,
+		(xdrproc_t) xdr_float, (caddr_t) &clnt_res,
 		TIMEOUT) != RPC_SUCCESS) {
 		return (NULL);
 	}
 	return (&clnt_res);
 }
 
-double *
-multiplicacion_1(double a, double b,  CLIENT *clnt)
+float *
+multiplicacion_1(float a, float b,  CLIENT *clnt)
 {
 	multiplicacion_1_argument arg;
-	static double clnt_res;
+	static float clnt_res;
 
 	memset((char *)&clnt_res, 0, sizeof(clnt_res));
 	arg.a = a;
 	arg.b = b;
 	if (clnt_call (clnt, MULTIPLICACION, (xdrproc_t) xdr_multiplicacion_1_argument, (caddr_t) &arg,
-		(xdrproc_t) xdr_double, (caddr_t) &clnt_res,
+		(xdrproc_t) xdr_float, (caddr_t) &clnt_res,
 		TIMEOUT) != RPC_SUCCESS) {
 		return (NULL);
 	}
 	return (&clnt_res);
 }
 
-double *
-division_1(double a, double b,  CLIENT *clnt)
+float *
+division_1(float a, float b,  CLIENT *clnt)
 {
 	division_1_argument arg;
-	static double clnt_res;
+	static float clnt_res;
 
 	memset((char *)&clnt_res, 0, sizeof(clnt_res));
 	arg.a = a;
 	arg.b = b;
 	if (clnt_call (clnt, DIVISION, (xdrproc_t) xdr_division_1_argument, (caddr_t) &arg,
-		(xdrproc_t) xdr_double, (caddr_t) &clnt_res,
+		(xdrproc_t) xdr_float, (caddr_t) &clnt_res,
+		TIMEOUT) != RPC_SUCCESS) {
+		return (NULL);
+	}
+	return (&clnt_res);
+}
+
+t_vector *
+sumavectores_1(t_vector v_1, t_vector v_2, int n,  CLIENT *clnt)
+{
+	sumavectores_1_argument arg;
+	static t_vector clnt_res;
+
+	memset((char *)&clnt_res, 0, sizeof(clnt_res));
+	arg.v_1 = v_1;
+	arg.v_2 = v_2;
+	arg.n = n;
+	if (clnt_call (clnt, SUMAVECTORES, (xdrproc_t) xdr_sumavectores_1_argument, (caddr_t) &arg,
+		(xdrproc_t) xdr_t_vector, (caddr_t) &clnt_res,
+		TIMEOUT) != RPC_SUCCESS) {
+		return (NULL);
+	}
+	return (&clnt_res);
+}
+
+t_vector *
+productoescalarvectores_1(t_vector v, float escalar, int n,  CLIENT *clnt)
+{
+	productoescalarvectores_1_argument arg;
+	static t_vector clnt_res;
+
+	memset((char *)&clnt_res, 0, sizeof(clnt_res));
+	arg.v = v;
+	arg.escalar = escalar;
+	arg.n = n;
+	if (clnt_call (clnt, PRODUCTOESCALARVECTORES, (xdrproc_t) xdr_productoescalarvectores_1_argument, (caddr_t) &arg,
+		(xdrproc_t) xdr_t_vector, (caddr_t) &clnt_res,
+		TIMEOUT) != RPC_SUCCESS) {
+		return (NULL);
+	}
+	return (&clnt_res);
+}
+
+t_vector *
+productovectorial_1(t_vector v_1, t_vector v_2, int n,  CLIENT *clnt)
+{
+	productovectorial_1_argument arg;
+	static t_vector clnt_res;
+
+	memset((char *)&clnt_res, 0, sizeof(clnt_res));
+	arg.v_1 = v_1;
+	arg.v_2 = v_2;
+	arg.n = n;
+	if (clnt_call (clnt, PRODUCTOVECTORIAL, (xdrproc_t) xdr_productovectorial_1_argument, (caddr_t) &arg,
+		(xdrproc_t) xdr_t_vector, (caddr_t) &clnt_res,
 		TIMEOUT) != RPC_SUCCESS) {
 		return (NULL);
 	}

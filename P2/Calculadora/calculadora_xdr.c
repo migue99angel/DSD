@@ -6,11 +6,22 @@
 #include "calculadora.h"
 
 bool_t
+xdr_t_vector (XDR *xdrs, t_vector *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_array (xdrs, (char **)&objp->t_vector_val, (u_int *) &objp->t_vector_len, ~0,
+		sizeof (float), (xdrproc_t) xdr_float))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_suma_1_argument (XDR *xdrs, suma_1_argument *objp)
 {
-	 if (!xdr_double (xdrs, &objp->a))
+	 if (!xdr_float (xdrs, &objp->a))
 		 return FALSE;
-	 if (!xdr_double (xdrs, &objp->b))
+	 if (!xdr_float (xdrs, &objp->b))
 		 return FALSE;
 	return TRUE;
 }
@@ -18,9 +29,9 @@ xdr_suma_1_argument (XDR *xdrs, suma_1_argument *objp)
 bool_t
 xdr_resta_1_argument (XDR *xdrs, resta_1_argument *objp)
 {
-	 if (!xdr_double (xdrs, &objp->a))
+	 if (!xdr_float (xdrs, &objp->a))
 		 return FALSE;
-	 if (!xdr_double (xdrs, &objp->b))
+	 if (!xdr_float (xdrs, &objp->b))
 		 return FALSE;
 	return TRUE;
 }
@@ -28,9 +39,9 @@ xdr_resta_1_argument (XDR *xdrs, resta_1_argument *objp)
 bool_t
 xdr_multiplicacion_1_argument (XDR *xdrs, multiplicacion_1_argument *objp)
 {
-	 if (!xdr_double (xdrs, &objp->a))
+	 if (!xdr_float (xdrs, &objp->a))
 		 return FALSE;
-	 if (!xdr_double (xdrs, &objp->b))
+	 if (!xdr_float (xdrs, &objp->b))
 		 return FALSE;
 	return TRUE;
 }
@@ -38,9 +49,45 @@ xdr_multiplicacion_1_argument (XDR *xdrs, multiplicacion_1_argument *objp)
 bool_t
 xdr_division_1_argument (XDR *xdrs, division_1_argument *objp)
 {
-	 if (!xdr_double (xdrs, &objp->a))
+	 if (!xdr_float (xdrs, &objp->a))
 		 return FALSE;
-	 if (!xdr_double (xdrs, &objp->b))
+	 if (!xdr_float (xdrs, &objp->b))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_sumavectores_1_argument (XDR *xdrs, sumavectores_1_argument *objp)
+{
+	 if (!xdr_t_vector (xdrs, &objp->v_1))
+		 return FALSE;
+	 if (!xdr_t_vector (xdrs, &objp->v_2))
+		 return FALSE;
+	 if (!xdr_int (xdrs, &objp->n))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_productoescalarvectores_1_argument (XDR *xdrs, productoescalarvectores_1_argument *objp)
+{
+	 if (!xdr_t_vector (xdrs, &objp->v))
+		 return FALSE;
+	 if (!xdr_float (xdrs, &objp->escalar))
+		 return FALSE;
+	 if (!xdr_int (xdrs, &objp->n))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_productovectorial_1_argument (XDR *xdrs, productovectorial_1_argument *objp)
+{
+	 if (!xdr_t_vector (xdrs, &objp->v_1))
+		 return FALSE;
+	 if (!xdr_t_vector (xdrs, &objp->v_2))
+		 return FALSE;
+	 if (!xdr_int (xdrs, &objp->n))
 		 return FALSE;
 	return TRUE;
 }
