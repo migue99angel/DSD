@@ -49,18 +49,120 @@ int main (int argc, char *argv[])
 	char operador; // Almaceno en un char el operador
 	double arg1, arg2; //Argumentos de las operaciones 
 	double* resultado; //Puntero a double donde se almacenarán las operaciones
-	//Nos aseguramos que se llama correctamente al programa
-	if (argc != 5) {
-		printf ("Uso: %s [servidor] [argumento] [operador] [argumento]\n", argv[0]);
-		exit (1);
+	int opcion = 0,vectores = 0, op_aux = 0;
+	char* entrada;
+	host = argv[1];		  //Almaceno el nombre del servidor
+	while( 1 == 1)
+	{
+		switch(opcion)
+		{
+			case 0:
+				printf("¿Qué quieres hacer?\n");
+				printf("1 - Operaciones básicas (+ - x /)\n");
+				printf("2 - Operaciones con vectores\n");
+				printf("3 - Operaciones con matrices\n");
+				printf("4 - Acabar ejecución\n");
+				int x;
+				scanf("%i",&x);
+				opcion = (int)x;
+			break;
+			case 1:
+				
+				printf("Introduce el operador (+,-,x,/) \n");
+				scanf("%s",&operador);
+				printf("Introduce el primer argumento de la operación básica a realizar\n");
+				scanf("%le",&arg1);
+				printf("Introduce el segundo argumento de la operación básica a realizar\n");
+				scanf("%le",&arg2);
+
+				resultado = calculadora_1 (host,arg1,operador,arg2);	//Realizo el calculo
+				printf("%f %c %f = %f\n",arg1,operador,arg2,*resultado); //Muestro por pantalla el resultado
+				opcion = 0;
+			break;
+			case 2:
+				vectores = 1;
+				while(vectores == 1)
+				{
+					switch(op_aux)
+					{
+						case 0:
+							printf("¿Qué operación quieres hacer con vectores?\n");
+							printf("1 - Suma de vectores\n");
+							printf("2 - Producto de un escalar por un vector\n");
+							printf("3 - Producto vectorial\n");
+							printf("4 - Volver al menu\n");
+							int y;
+							scanf("%i",&y);
+							op_aux = (int)y;
+						break;
+
+						case 1:
+							printf("HOLA\n");
+							op_aux = 0;
+						break;
+
+						case 2:
+							printf("HOLA\n");
+							op_aux = 0;
+						break;
+
+						case 3:
+							printf("HOLA\n");
+							op_aux = 0;
+						break;
+
+						case 4:
+							vectores = 0;
+							opcion = 0;
+						break;
+					}
+				}
+			break;
+
+			case 3:
+				vectores = 2;
+				while(vectores == 2)
+				{
+					switch(op_aux)
+					{
+						case 0:
+							printf("¿Qué operación quieres hacer con matrices?\n");
+							printf("1 - Suma de matrices\n");
+							printf("2 - Producto de un escalar por una matriz\n");
+							printf("3 - Matriz traspuesta\n");
+							printf("4 - Volver al menu\n");
+							int z;
+							scanf("%i",&z);
+							op_aux = (int)z;
+						break;
+
+						case 1:
+							printf("HOLA\n");
+							op_aux = 0;
+						break;
+						
+						case 2:
+							printf("HOLA\n");
+							op_aux = 0;
+						break;
+						
+						case 3:
+							printf("HOLA\n");
+							op_aux = 0;
+						break;
+
+						case 4:
+							vectores = 0;
+							opcion = 0;
+						break;
+					}
+				}
+			break;
+
+			case 4:
+				exit(0);
+			break;
+		}
 	}
 
-	host = argv[1];		  //Almaceno el nombre del servidor
-	arg1 = atof(argv[2]); // La función atof transforma el argumento en double
-	operador = *argv[3];  // El operador es un char por lo que no es necesario utilizar atof
-	arg2 = atof(argv[4]); // La función atof transforma el argumento en double
-	resultado = calculadora_1 (host,arg1,operador,arg2);	//Realizo el calculo
-	printf("%f %c %f = %f\n",arg1,operador,arg2,*resultado); //Muestro por pantalla el resultado
-
-exit (0);
 }
