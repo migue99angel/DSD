@@ -43,19 +43,49 @@ _division_1 (division_1_argument *argp, struct svc_req *rqstp)
 static t_vector *
 _sumavectores_1 (sumavectores_1_argument *argp, struct svc_req *rqstp)
 {
-	return (sumavectores_1_svc(argp->v_1, argp->v_2, argp->n, rqstp));
+	return (sumavectores_1_svc(argp->v_1, argp->v_2, rqstp));
 }
 
 static t_vector *
 _productoescalarvectores_1 (productoescalarvectores_1_argument *argp, struct svc_req *rqstp)
 {
-	return (productoescalarvectores_1_svc(argp->v, argp->escalar, argp->n, rqstp));
+	return (productoescalarvectores_1_svc(argp->v, argp->escalar, rqstp));
 }
 
 static t_vector *
 _productovectorial_1 (productovectorial_1_argument *argp, struct svc_req *rqstp)
 {
-	return (productovectorial_1_svc(argp->v_1, argp->v_2, argp->n, rqstp));
+	return (productovectorial_1_svc(argp->v_1, argp->v_2, rqstp));
+}
+
+static float *
+_mediaaritmetica_1 (t_vector  *argp, struct svc_req *rqstp)
+{
+	return (mediaaritmetica_1_svc(*argp, rqstp));
+}
+
+static t_vector *
+_fibonacci_1 (int  *argp, struct svc_req *rqstp)
+{
+	return (fibonacci_1_svc(*argp, rqstp));
+}
+
+static int *
+_factorial_1 (int  *argp, struct svc_req *rqstp)
+{
+	return (factorial_1_svc(*argp, rqstp));
+}
+
+static float *
+_logaritmobase_n_1 (logaritmobase_n_1_argument *argp, struct svc_req *rqstp)
+{
+	return (logaritmobase_n_1_svc(argp->numero, argp->base, rqstp));
+}
+
+static float *
+_potencia_1 (potencia_1_argument *argp, struct svc_req *rqstp)
+{
+	return (potencia_1_svc(argp->base, argp->exponente, rqstp));
 }
 
 static void
@@ -69,6 +99,11 @@ calculadora_1(struct svc_req *rqstp, register SVCXPRT *transp)
 		sumavectores_1_argument sumavectores_1_arg;
 		productoescalarvectores_1_argument productoescalarvectores_1_arg;
 		productovectorial_1_argument productovectorial_1_arg;
+		t_vector mediaaritmetica_1_arg;
+		int fibonacci_1_arg;
+		int factorial_1_arg;
+		logaritmobase_n_1_argument logaritmobase_n_1_arg;
+		potencia_1_argument potencia_1_arg;
 	} argument;
 	char *result;
 	xdrproc_t _xdr_argument, _xdr_result;
@@ -119,6 +154,36 @@ calculadora_1(struct svc_req *rqstp, register SVCXPRT *transp)
 		_xdr_argument = (xdrproc_t) xdr_productovectorial_1_argument;
 		_xdr_result = (xdrproc_t) xdr_t_vector;
 		local = (char *(*)(char *, struct svc_req *)) _productovectorial_1;
+		break;
+
+	case MEDIAARITMETICA:
+		_xdr_argument = (xdrproc_t) xdr_t_vector;
+		_xdr_result = (xdrproc_t) xdr_float;
+		local = (char *(*)(char *, struct svc_req *)) _mediaaritmetica_1;
+		break;
+
+	case FIBONACCI:
+		_xdr_argument = (xdrproc_t) xdr_int;
+		_xdr_result = (xdrproc_t) xdr_t_vector;
+		local = (char *(*)(char *, struct svc_req *)) _fibonacci_1;
+		break;
+
+	case FACTORIAL:
+		_xdr_argument = (xdrproc_t) xdr_int;
+		_xdr_result = (xdrproc_t) xdr_int;
+		local = (char *(*)(char *, struct svc_req *)) _factorial_1;
+		break;
+
+	case LOGARITMOBASE_N:
+		_xdr_argument = (xdrproc_t) xdr_logaritmobase_n_1_argument;
+		_xdr_result = (xdrproc_t) xdr_float;
+		local = (char *(*)(char *, struct svc_req *)) _logaritmobase_n_1;
+		break;
+
+	case POTENCIA:
+		_xdr_argument = (xdrproc_t) xdr_potencia_1_argument;
+		_xdr_result = (xdrproc_t) xdr_float;
+		local = (char *(*)(char *, struct svc_req *)) _potencia_1;
 		break;
 
 	default:

@@ -78,7 +78,7 @@ division_1(float a, float b,  CLIENT *clnt)
 }
 
 t_vector *
-sumavectores_1(t_vector v_1, t_vector v_2, int n,  CLIENT *clnt)
+sumavectores_1(t_vector v_1, t_vector v_2,  CLIENT *clnt)
 {
 	sumavectores_1_argument arg;
 	static t_vector clnt_res;
@@ -86,7 +86,6 @@ sumavectores_1(t_vector v_1, t_vector v_2, int n,  CLIENT *clnt)
 	memset((char *)&clnt_res, 0, sizeof(clnt_res));
 	arg.v_1 = v_1;
 	arg.v_2 = v_2;
-	arg.n = n;
 	if (clnt_call (clnt, SUMAVECTORES, (xdrproc_t) xdr_sumavectores_1_argument, (caddr_t) &arg,
 		(xdrproc_t) xdr_t_vector, (caddr_t) &clnt_res,
 		TIMEOUT) != RPC_SUCCESS) {
@@ -96,7 +95,7 @@ sumavectores_1(t_vector v_1, t_vector v_2, int n,  CLIENT *clnt)
 }
 
 t_vector *
-productoescalarvectores_1(t_vector v, float escalar, int n,  CLIENT *clnt)
+productoescalarvectores_1(t_vector v, float escalar,  CLIENT *clnt)
 {
 	productoescalarvectores_1_argument arg;
 	static t_vector clnt_res;
@@ -104,7 +103,6 @@ productoescalarvectores_1(t_vector v, float escalar, int n,  CLIENT *clnt)
 	memset((char *)&clnt_res, 0, sizeof(clnt_res));
 	arg.v = v;
 	arg.escalar = escalar;
-	arg.n = n;
 	if (clnt_call (clnt, PRODUCTOESCALARVECTORES, (xdrproc_t) xdr_productoescalarvectores_1_argument, (caddr_t) &arg,
 		(xdrproc_t) xdr_t_vector, (caddr_t) &clnt_res,
 		TIMEOUT) != RPC_SUCCESS) {
@@ -114,7 +112,7 @@ productoescalarvectores_1(t_vector v, float escalar, int n,  CLIENT *clnt)
 }
 
 t_vector *
-productovectorial_1(t_vector v_1, t_vector v_2, int n,  CLIENT *clnt)
+productovectorial_1(t_vector v_1, t_vector v_2,  CLIENT *clnt)
 {
 	productovectorial_1_argument arg;
 	static t_vector clnt_res;
@@ -122,9 +120,87 @@ productovectorial_1(t_vector v_1, t_vector v_2, int n,  CLIENT *clnt)
 	memset((char *)&clnt_res, 0, sizeof(clnt_res));
 	arg.v_1 = v_1;
 	arg.v_2 = v_2;
-	arg.n = n;
 	if (clnt_call (clnt, PRODUCTOVECTORIAL, (xdrproc_t) xdr_productovectorial_1_argument, (caddr_t) &arg,
 		(xdrproc_t) xdr_t_vector, (caddr_t) &clnt_res,
+		TIMEOUT) != RPC_SUCCESS) {
+		return (NULL);
+	}
+	return (&clnt_res);
+}
+
+float *
+mediaaritmetica_1(t_vector v,  CLIENT *clnt)
+{
+	static float clnt_res;
+
+	memset((char *)&clnt_res, 0, sizeof(clnt_res));
+	if (clnt_call (clnt, MEDIAARITMETICA,
+		(xdrproc_t) xdr_t_vector, (caddr_t) &v,
+		(xdrproc_t) xdr_float, (caddr_t) &clnt_res,
+		TIMEOUT) != RPC_SUCCESS) {
+		return (NULL);
+	}
+	return (&clnt_res);
+}
+
+t_vector *
+fibonacci_1(int n,  CLIENT *clnt)
+{
+	static t_vector clnt_res;
+
+	memset((char *)&clnt_res, 0, sizeof(clnt_res));
+	if (clnt_call (clnt, FIBONACCI,
+		(xdrproc_t) xdr_int, (caddr_t) &n,
+		(xdrproc_t) xdr_t_vector, (caddr_t) &clnt_res,
+		TIMEOUT) != RPC_SUCCESS) {
+		return (NULL);
+	}
+	return (&clnt_res);
+}
+
+int *
+factorial_1(int n,  CLIENT *clnt)
+{
+	static int clnt_res;
+
+	memset((char *)&clnt_res, 0, sizeof(clnt_res));
+	if (clnt_call (clnt, FACTORIAL,
+		(xdrproc_t) xdr_int, (caddr_t) &n,
+		(xdrproc_t) xdr_int, (caddr_t) &clnt_res,
+		TIMEOUT) != RPC_SUCCESS) {
+		return (NULL);
+	}
+	return (&clnt_res);
+}
+
+float *
+logaritmobase_n_1(float numero, float base,  CLIENT *clnt)
+{
+	logaritmobase_n_1_argument arg;
+	static float clnt_res;
+
+	memset((char *)&clnt_res, 0, sizeof(clnt_res));
+	arg.numero = numero;
+	arg.base = base;
+	if (clnt_call (clnt, LOGARITMOBASE_N, (xdrproc_t) xdr_logaritmobase_n_1_argument, (caddr_t) &arg,
+		(xdrproc_t) xdr_float, (caddr_t) &clnt_res,
+		TIMEOUT) != RPC_SUCCESS) {
+		return (NULL);
+	}
+	return (&clnt_res);
+}
+
+float *
+potencia_1(float base, float exponente,  CLIENT *clnt)
+{
+	potencia_1_argument arg;
+	static float clnt_res;
+
+	memset((char *)&clnt_res, 0, sizeof(clnt_res));
+	arg.base = base;
+	arg.exponente = exponente;
+	if (clnt_call (clnt, POTENCIA, (xdrproc_t) xdr_potencia_1_argument, (caddr_t) &arg,
+		(xdrproc_t) xdr_float, (caddr_t) &clnt_res,
 		TIMEOUT) != RPC_SUCCESS) {
 		return (NULL);
 	}

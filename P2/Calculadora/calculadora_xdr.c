@@ -63,8 +63,6 @@ xdr_sumavectores_1_argument (XDR *xdrs, sumavectores_1_argument *objp)
 		 return FALSE;
 	 if (!xdr_t_vector (xdrs, &objp->v_2))
 		 return FALSE;
-	 if (!xdr_int (xdrs, &objp->n))
-		 return FALSE;
 	return TRUE;
 }
 
@@ -74,8 +72,6 @@ xdr_productoescalarvectores_1_argument (XDR *xdrs, productoescalarvectores_1_arg
 	 if (!xdr_t_vector (xdrs, &objp->v))
 		 return FALSE;
 	 if (!xdr_float (xdrs, &objp->escalar))
-		 return FALSE;
-	 if (!xdr_int (xdrs, &objp->n))
 		 return FALSE;
 	return TRUE;
 }
@@ -87,7 +83,25 @@ xdr_productovectorial_1_argument (XDR *xdrs, productovectorial_1_argument *objp)
 		 return FALSE;
 	 if (!xdr_t_vector (xdrs, &objp->v_2))
 		 return FALSE;
-	 if (!xdr_int (xdrs, &objp->n))
+	return TRUE;
+}
+
+bool_t
+xdr_logaritmobase_n_1_argument (XDR *xdrs, logaritmobase_n_1_argument *objp)
+{
+	 if (!xdr_float (xdrs, &objp->numero))
+		 return FALSE;
+	 if (!xdr_float (xdrs, &objp->base))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_potencia_1_argument (XDR *xdrs, potencia_1_argument *objp)
+{
+	 if (!xdr_float (xdrs, &objp->base))
+		 return FALSE;
+	 if (!xdr_float (xdrs, &objp->exponente))
 		 return FALSE;
 	return TRUE;
 }

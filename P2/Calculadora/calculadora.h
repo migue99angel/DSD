@@ -46,23 +46,32 @@ typedef struct division_1_argument division_1_argument;
 struct sumavectores_1_argument {
 	t_vector v_1;
 	t_vector v_2;
-	int n;
 };
 typedef struct sumavectores_1_argument sumavectores_1_argument;
 
 struct productoescalarvectores_1_argument {
 	t_vector v;
 	float escalar;
-	int n;
 };
 typedef struct productoescalarvectores_1_argument productoescalarvectores_1_argument;
 
 struct productovectorial_1_argument {
 	t_vector v_1;
 	t_vector v_2;
-	int n;
 };
 typedef struct productovectorial_1_argument productovectorial_1_argument;
+
+struct logaritmobase_n_1_argument {
+	float numero;
+	float base;
+};
+typedef struct logaritmobase_n_1_argument logaritmobase_n_1_argument;
+
+struct potencia_1_argument {
+	float base;
+	float exponente;
+};
+typedef struct potencia_1_argument potencia_1_argument;
 
 #define CALCULADORA 0x20000001
 #define CALCULADORA_VER 1
@@ -81,14 +90,29 @@ extern  float * multiplicacion_1_svc(float , float , struct svc_req *);
 extern  float * division_1(float , float , CLIENT *);
 extern  float * division_1_svc(float , float , struct svc_req *);
 #define SUMAVECTORES 5
-extern  t_vector * sumavectores_1(t_vector , t_vector , int , CLIENT *);
-extern  t_vector * sumavectores_1_svc(t_vector , t_vector , int , struct svc_req *);
+extern  t_vector * sumavectores_1(t_vector , t_vector , CLIENT *);
+extern  t_vector * sumavectores_1_svc(t_vector , t_vector , struct svc_req *);
 #define PRODUCTOESCALARVECTORES 6
-extern  t_vector * productoescalarvectores_1(t_vector , float , int , CLIENT *);
-extern  t_vector * productoescalarvectores_1_svc(t_vector , float , int , struct svc_req *);
+extern  t_vector * productoescalarvectores_1(t_vector , float , CLIENT *);
+extern  t_vector * productoescalarvectores_1_svc(t_vector , float , struct svc_req *);
 #define PRODUCTOVECTORIAL 7
-extern  t_vector * productovectorial_1(t_vector , t_vector , int , CLIENT *);
-extern  t_vector * productovectorial_1_svc(t_vector , t_vector , int , struct svc_req *);
+extern  t_vector * productovectorial_1(t_vector , t_vector , CLIENT *);
+extern  t_vector * productovectorial_1_svc(t_vector , t_vector , struct svc_req *);
+#define MEDIAARITMETICA 8
+extern  float * mediaaritmetica_1(t_vector , CLIENT *);
+extern  float * mediaaritmetica_1_svc(t_vector , struct svc_req *);
+#define FIBONACCI 9
+extern  t_vector * fibonacci_1(int , CLIENT *);
+extern  t_vector * fibonacci_1_svc(int , struct svc_req *);
+#define FACTORIAL 10
+extern  int * factorial_1(int , CLIENT *);
+extern  int * factorial_1_svc(int , struct svc_req *);
+#define LOGARITMOBASE_N 11
+extern  float * logaritmobase_n_1(float , float , CLIENT *);
+extern  float * logaritmobase_n_1_svc(float , float , struct svc_req *);
+#define POTENCIA 12
+extern  float * potencia_1(float , float , CLIENT *);
+extern  float * potencia_1_svc(float , float , struct svc_req *);
 extern int calculadora_1_freeresult (SVCXPRT *, xdrproc_t, caddr_t);
 
 #else /* K&R C */
@@ -113,6 +137,21 @@ extern  t_vector * productoescalarvectores_1_svc();
 #define PRODUCTOVECTORIAL 7
 extern  t_vector * productovectorial_1();
 extern  t_vector * productovectorial_1_svc();
+#define MEDIAARITMETICA 8
+extern  float * mediaaritmetica_1();
+extern  float * mediaaritmetica_1_svc();
+#define FIBONACCI 9
+extern  t_vector * fibonacci_1();
+extern  t_vector * fibonacci_1_svc();
+#define FACTORIAL 10
+extern  int * factorial_1();
+extern  int * factorial_1_svc();
+#define LOGARITMOBASE_N 11
+extern  float * logaritmobase_n_1();
+extern  float * logaritmobase_n_1_svc();
+#define POTENCIA 12
+extern  float * potencia_1();
+extern  float * potencia_1_svc();
 extern int calculadora_1_freeresult ();
 #endif /* K&R C */
 
@@ -127,6 +166,8 @@ extern  bool_t xdr_division_1_argument (XDR *, division_1_argument*);
 extern  bool_t xdr_sumavectores_1_argument (XDR *, sumavectores_1_argument*);
 extern  bool_t xdr_productoescalarvectores_1_argument (XDR *, productoescalarvectores_1_argument*);
 extern  bool_t xdr_productovectorial_1_argument (XDR *, productovectorial_1_argument*);
+extern  bool_t xdr_logaritmobase_n_1_argument (XDR *, logaritmobase_n_1_argument*);
+extern  bool_t xdr_potencia_1_argument (XDR *, potencia_1_argument*);
 
 #else /* K&R C */
 extern bool_t xdr_t_vector ();
@@ -137,6 +178,8 @@ extern bool_t xdr_division_1_argument ();
 extern bool_t xdr_sumavectores_1_argument ();
 extern bool_t xdr_productoescalarvectores_1_argument ();
 extern bool_t xdr_productovectorial_1_argument ();
+extern bool_t xdr_logaritmobase_n_1_argument ();
+extern bool_t xdr_potencia_1_argument ();
 
 #endif /* K&R C */
 

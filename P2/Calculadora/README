@@ -1,0 +1,6 @@
+Para generar el código de calculadora.x se usa el comando rpcgen -NCa calculadora.x
+Para compilar el códifo del servidor se usa:
+	cc calculadora_server.c calculadora_svc.c calculadora_xdr.c -o servidor -lnsl -lm
+Para compilar el código del cliente se usa:
+	cc calculadora_client.c calculadora_clnt.c calculadora_xdr.c -o cliente -lnsl
+
