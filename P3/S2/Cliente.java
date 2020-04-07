@@ -18,14 +18,29 @@ public class Cliente {
             System.setSecurityManager(new SecurityManager());
         }
         try {
-                String nombre_objeto_remoto = "Orginal";
+                String nombre_objeto_remoto = "Original";
                 System.out.println("Buscando el objeto servidor...");
-                Registry registry = LocateRegistry.getRegistry(args[0]);
+                Registry registry = LocateRegistry.getRegistry("localhost");
                 I_Donaciones instancia_local = (I_Donaciones) registry.lookup(nombre_objeto_remoto);
                 System.out.println("Invocando el objeto servidor");
-                instancia_local.registrar("Manolo");
-                instancia_local.donar("Manolo",3000.0);
-                instancia_local.getTotal("Manolo");
+                
+                /*System.out.println("Primer usuario");
+                instancia_local.registrar("Otro");
+                instancia_local.donar("Otro",3000.0);
+                System.out.println("El total donado por los usuarios es "+instancia_local.getTotal("Julian")+" euros");
+                
+                System.out.println("Segundo usuario");
+                instancia_local.registrar("Otro2");
+                instancia_local.donar("Otro2",200.0);
+                System.out.println("El total donado por los usuarios es "+instancia_local.getTotal("Julian")+" euros");
+                
+                System.out.println("Tercer usuario");
+                instancia_local.registrar("Otro3");
+                instancia_local.donar("Otro3",1000.0);
+                System.out.println("El total donado por los usuarios es "+instancia_local.getTotal("Julian")+" euros");*/
+                
+                System.out.println(instancia_local.getUsuarios());
+                
         } catch (Exception e) {
                 System.err.println("Error al invocar el servidor");
                 e.printStackTrace();

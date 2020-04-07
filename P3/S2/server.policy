@@ -1,4 +1,4 @@
 
-grant codeBase "file:./" {
+grant codeBase "file:./build/classes/" {
     permission java.security.AllPermission;
 };

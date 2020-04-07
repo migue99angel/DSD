@@ -12,7 +12,8 @@ public class Servidor implements I_Donaciones
     //El total global será la suma del total local de las dos réplicas
     private double totalLocal;
     //Esta es una referencia a la otra replica del servidor
-    private Servidor replica;
+    //private Servidor replica;
+    private I_Donaciones replica;
     //Aquí mantenemos el registro de las donaciones realizadas
     private ArrayList<Pair<String, Double>> Registro;
 
@@ -29,14 +30,14 @@ public class Servidor implements I_Donaciones
     {
         if(!this.usuarios.contains(usuario))
         {
-            if(!this.replica.usuarios.contains(usuario))
+            if(! this.replica.getUsuarios().contains(usuario))
             {
-                if(this.usuarios.size() <= this.replica.usuarios.size())
+                if(this.usuarios.size() <= this.replica.getUsuarios().size())
                 {
                     this.usuarios.add(usuario);
                 }
                 else
-                   this.replica.usuarios.add(usuario); 
+                   this.replica.addUsuario(usuario); 
             }
             else
                 System.out.println("El usuario "+usuario+" ya se encuentra registrado en otro servidor");
@@ -59,10 +60,10 @@ public class Servidor implements I_Donaciones
                 totalLocal += cantidad;
             }else
             {
-                 if(this.replica.usuarios.contains(usuario))
+                 if(this.replica.getUsuarios().contains(usuario))
                  {
-                     this.replica.Registro.add(aux);
-                     this.replica.totalLocal += cantidad;
+                     this.replica.addToRegistro(aux);
+                     this.replica.incrementar(cantidad);
                  }else
                      System.out.println("El usuario introducido no se encuentra registrado en ninguna replica del servidor");
             }
@@ -82,14 +83,14 @@ public class Servidor implements I_Donaciones
                 valido = true;
         }
         
-        for(int i = 0; i < this.replica.Registro.size() && !valido; i++)
+        for(int i = 0; i <  this.replica.getRegistro().size() && !valido; i++)
         {
-            if( this.replica.Registro.get(i).getKey().equals(usuario))
+            if( this.replica.getRegistro().get(i).getKey().equals(usuario))
                 valido = true;
         }
         
         if(valido)    
-            return this.totalLocal + this.replica.totalLocal;
+            return this.totalLocal +  this.replica.getTotalLocal();
         else{
             System.out.println("Es necesario realizar una donación para poder consultar el total aportado");
             return 0.0;
@@ -100,12 +101,50 @@ public class Servidor implements I_Donaciones
     {
         try {
         Registry registry = LocateRegistry.getRegistry(ubicacion);
-        this.replica = (Servidor) registry.lookup(nombre);
-        this.replica.replica = this;
+        I_Donaciones aux = (I_Donaciones) registry.lookup(nombre);
+        this.replica =  aux;
+        this.replica.asignarReferencia(this);
+        System.out.println("Servidores enlazados correctamente");
         } catch (Exception e){
             System.err.println("Error al enlazar los servidores");
             e.printStackTrace();
         }
+    }
+    
+    public void asignarReferencia(I_Donaciones ref) throws RemoteException
+    {
+        this.replica = ref;
+    }
+
+    
+    public ArrayList<String> getUsuarios() throws RemoteException
+    {
+        return this.usuarios;
+    }
+    
+    public ArrayList<Pair<String, Double>> getRegistro() throws RemoteException
+    {
+        return this.Registro;
+    }
+    
+    public void addUsuario(String usuario) throws RemoteException
+    {
+        this.usuarios.add(usuario);
+    }
+    
+    public double getTotalLocal()
+    {
+        return this.totalLocal;
+    }
+    
+    public void incrementar(double cantidad) throws RemoteException
+    {
+        this.totalLocal += cantidad;
+    }
+    
+    public void addToRegistro(Pair<String, Double> donacion) throws RemoteException
+    {
+        this.Registro.add(donacion);
     }
     
     public static void main(String[] args) {
