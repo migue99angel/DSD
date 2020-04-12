@@ -26,6 +26,7 @@ public class Servidor implements I_Donaciones
         usuarios = new ArrayList<String>();
         Registro = new ArrayList<Aportacion>();
         replicas = new ArrayList<I_Donaciones>();
+
     }
     
     @Override
@@ -74,7 +75,10 @@ public class Servidor implements I_Donaciones
             return 0.0;
         }
     }
-    
+    /*
+    * Esta función es la encargada de enlazar una nueva replica con las replicas ya existentes.
+    * La responsabilidad de "enlazarse" (añadir una replica a su vector de replicas) y de enlazar las ya existentes con la nueva será de la última réplica en llegar
+    */
     public void enlazar(String ubicacion, String nombre, int nReplicas)
     {
         try {
@@ -86,7 +90,7 @@ public class Servidor implements I_Donaciones
                 this.replicas.get(0).asignarReferencia(this);
                 System.out.println("2 Servidores enlazados correctamente");
             }
-            if(nReplicas == 3)
+            if(nReplicas != 2)
             {
                 Registry registry = LocateRegistry.getRegistry(ubicacion);
                 I_Donaciones aux = (I_Donaciones) registry.lookup(nombre);
@@ -102,7 +106,7 @@ public class Servidor implements I_Donaciones
                     this.replicas.get(i).asignarReferencia(this);
                 }
                 
-                System.out.println("3 Servidores enlazados correctamente");
+                System.out.println("N Servidores enlazados correctamente");
             }
         } catch (Exception e){
             System.err.println("Error al enlazar los servidores");
@@ -305,6 +309,26 @@ public class Servidor implements I_Donaciones
 
     }
     
+    /*
+    * Funcion que devuelve un Array de Aportaciones con todas las donaciones hechas a todas las réplicas
+    */
+    public ArrayList<Aportacion> getRegistroTotal() throws RemoteException
+    {
+        ArrayList<Aportacion> aux = new ArrayList<>();
+        for(int i = 0; i < this.Registro.size(); i++ )
+            aux.add(Registro.get(i));
+        
+        for(int i = 0; i < this.replicas.size(); i++)
+        {
+            for(int j = 0;j < this.replicas.get(i).getRegistro().size(); j++)
+            {
+                    aux.add(this.replicas.get(i).getRegistro().get(j));
+            }
+        }
+        
+        return aux;
+    }
+    
     public static void main(String[] args) {
         if(args.length < 2)
         {
@@ -347,7 +371,7 @@ public class Servidor implements I_Donaciones
                 ((Servidor) servidor).enlazar(args[0],"Replica",3);
             }
             
-        System.out.println("Ejemplo bound");
+        System.out.println("Servidor iniciado");
         } catch (Exception e) {
             System.err.println("Ejemplo exception:");
             e.printStackTrace();

@@ -1,7 +1,12 @@
 
 import java.io.Serializable;
 
-
+/*
+*
+* Clase Aportación, con tiene un usuario y la cantidad donada
+* la finalidad es la de mantener un registro de los usuarios que realizan aportaciones
+*
+*/
 public class Aportacion implements Serializable{
     public String usuario;
     public double aporte;

@@ -17,4 +17,5 @@ public interface I_Donaciones extends Remote
     void asignarReferencia(I_Donaciones ref)throws RemoteException;
     void asignarReplicaAUsar(I_Donaciones ref)throws RemoteException;
     ArrayList<I_Donaciones> obtenerReplicas()throws RemoteException;
+    ArrayList<Aportacion> getRegistroTotal() throws RemoteException;
 }

@@ -1,6 +1,7 @@
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.ArrayList;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -29,7 +30,7 @@ public class Cliente {
                 {
                     String nombre_objeto_remoto = "Original";
                     System.out.println("Buscando el objeto servidor...");
-                    Registry registry = LocateRegistry.getRegistry("localhost");
+                    Registry registry = LocateRegistry.getRegistry(args[0]);
                     I_Donaciones instancia_local = (I_Donaciones) registry.lookup(nombre_objeto_remoto);
                     System.out.println("Invocando el objeto servidor");
 
@@ -53,7 +54,7 @@ public class Cliente {
                 {
                     String nombre_objeto_remoto = "Replica";
                     System.out.println("Buscando el objeto servidor...");
-                    Registry registry = LocateRegistry.getRegistry("localhost");
+                    Registry registry = LocateRegistry.getRegistry(args[0]);
                     I_Donaciones instancia_local = (I_Donaciones) registry.lookup(nombre_objeto_remoto);
                     System.out.println("Invocando el objeto servidor");
 
@@ -76,7 +77,7 @@ public class Cliente {
                 {
                     String nombre_objeto_remoto = "Original";
                     System.out.println("Buscando el objeto servidor...");
-                    Registry registry = LocateRegistry.getRegistry("localhost");
+                    Registry registry = LocateRegistry.getRegistry(args[0]);
                     I_Donaciones instancia_local = (I_Donaciones) registry.lookup(nombre_objeto_remoto);
                     System.out.println("Invocando el objeto servidor");
                     System.out.println("Comprobando los usuarios que se han registrado en el servidor original");
@@ -86,7 +87,7 @@ public class Cliente {
                 {
                     String nombre_objeto_remoto = "Replica";
                     System.out.println("Buscando el objeto servidor...");
-                    Registry registry = LocateRegistry.getRegistry("localhost");
+                    Registry registry = LocateRegistry.getRegistry(args[0]);
                     I_Donaciones instancia_local = (I_Donaciones) registry.lookup(nombre_objeto_remoto);
                     System.out.println("Invocando el objeto servidor");
                     System.out.println("Comprobando los usuarios que se han registrado en el servidor replicado");
@@ -96,7 +97,7 @@ public class Cliente {
                 {
                     String nombre_objeto_remoto = "Original";
                     System.out.println("Buscando el objeto servidor...");
-                    Registry registry = LocateRegistry.getRegistry("localhost");
+                    Registry registry = LocateRegistry.getRegistry(args[0]);
                     I_Donaciones instancia_local = (I_Donaciones) registry.lookup(nombre_objeto_remoto);
                     System.out.println("Invocando el objeto servidor");
                     System.out.println("Comprobando el registro de donaciones del servidor original");
@@ -110,13 +111,13 @@ public class Cliente {
                     System.out.println("Comprobando el total del servidor original");
                     System.out.println(instancia_local.getTotalLocal());
                     System.out.println("Comprobando el tamaño del vector replicas del servidor original");
-                    System.out.println(instancia_local);
+
                 }
                 if(Integer.parseInt(args[1]) == 7)
                 {
                     String nombre_objeto_remoto = "Replica";
                     System.out.println("Buscando el objeto servidor...");
-                    Registry registry = LocateRegistry.getRegistry("localhost");
+                    Registry registry = LocateRegistry.getRegistry(args[0]);
                     I_Donaciones instancia_local = (I_Donaciones) registry.lookup(nombre_objeto_remoto);
                     System.out.println("Invocando el objeto servidor");
                     System.out.println("Comprobando el registro de donaciones del servidor replicado");
@@ -131,7 +132,7 @@ public class Cliente {
                     System.out.println("Comprobando el total del servidor replicado");
                     System.out.println(instancia_local.getTotalLocal());
                     System.out.println("Comprobando el tamaño del vector replicas del servidor replicado");
-                    System.out.println(instancia_local);
+
                     System.out.println("El total donado por los usuarios es "+instancia_local.getTotal("Miguel")+" euros");
                 }
                 if(Integer.parseInt(args[1]) == 8)
@@ -153,10 +154,23 @@ public class Cliente {
                     System.out.println("Comprobando el total del servidor replicado2");
                     System.out.println(instancia_local.getTotalLocal());
                     System.out.println("Comprobando el tamaño del vector replicas del servidor replicado2");
-                    System.out.println(instancia_local);
+
 
                 }
                 
+                if(Integer.parseInt(args[1]) == 9)
+                {
+                    String nombre_objeto_remoto = "Replica2";
+                    System.out.println("Buscando el objeto servidor...");
+                    Registry registry = LocateRegistry.getRegistry(args[0]);
+                    I_Donaciones instancia_local = (I_Donaciones) registry.lookup(nombre_objeto_remoto);
+                    System.out.println("Invocando el objeto servidor");
+                    ArrayList<Aportacion> aux = instancia_local.getRegistroTotal();
+                    for(int i= 0; i < aux.size(); i++)
+                        System.out.println("Usuario: "+aux.get(i).getUser() +" Cantidad donada: "+aux.get(i).getAporte());
+                }
+                
+
         } catch (Exception e) {
                 System.err.println("Error al invocar el servidor");
                 e.printStackTrace();
