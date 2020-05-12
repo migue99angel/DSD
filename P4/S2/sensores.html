@@ -1,0 +1,36 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>Sensores Sistema Domótico</title>
+	</head>
+	<body>
+		<form action="javascript:void(0);" onsubmit="javascript:enviar();">
+			Valor a simular: <input type="label" id="val1" /><br />
+			Sensor a simular:
+			<select id="sensores">
+				<option value="temperatura">Temperatura</option>
+				<option value="luminosidad">Luminosidad</option>
+			</select><br />
+			<input type="submit" value="Simular" />
+		</form>
+		<span id="resul"></span>
+	</body>
+	<script type="text/javascript">
+		var serviceURL = document.URL;
+		function enviar() {
+			var val1 = document.getElementById("val1").value;
+			var sensor = document.getElementById("sensores").value;
+			
+			var url = serviceURL+"/"+sensor+"/"+val1;
+			var httpRequest = new XMLHttpRequest();
+			httpRequest.onreadystatechange = function() {
+		    	if (httpRequest.readyState === 4){
+		        	var resultado = document.getElementById("resul");
+		        	resultado.innerHTML = httpRequest.responseText;
+		        }
+		    };
+			httpRequest.open("GET", url, true);
+			httpRequest.send(null);
+		}
+	</script>
+</html>
