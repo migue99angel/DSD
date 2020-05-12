@@ -18,41 +18,53 @@ function leerSensores(operacion, val1)
     if (operacion=="temperatura")
     {
         TEMP_ACTUAL = val1
+        return agente(operacion)
     }
     else if (operacion == "luminosidad")
     {
         LUM_ACTUAL = val1
+        return agente(operacion)
     }
 
-	agente()
 }
-function agente()
+
+function agente(operacion)
 {
-    if (TEMP_ACTUAL > UMBRAL_TEMP)
+    if (operacion=="temperatura")
     {
-        aireAcondicionado = true
-    }
-    else
-    {
-        aireAcondicionado = true
-    }
+        if (TEMP_ACTUAL > UMBRAL_TEMP)
+        {
+            aireAcondicionado = true
+            return "Encendido aire acondicionado"
+        }
+        else
+        {
+            aireAcondicionado = false
+            return "Apagado aire acondicionado"
 
-    if (LUM_ACTUAL < UMBRAL_LUM)
+        }
+    } else if (operacion == "luminosidad")
     {
-        persiana = false
-    }
-    else if (LUM_ACTUAL < UMBRAL_LUM)
-    {
-        persiana = true
-    }
 
+        if (LUM_ACTUAL < UMBRAL_LUM)
+        {
+            persiana = false
+            return "Persiana bajada"
 
+        }
+        else if (LUM_ACTUAL < UMBRAL_LUM)
+        {
+            persiana = true
+            return "Persiana subida"
+
+        }
+    }
 }
 
 var httpServer = http.createServer(
 	function(request, response) {
 		var uri = url.parse(request.url).pathname;
-		if (uri=="/") uri = "/usuario.html";
+		if (uri=="/") uri = "/sensores.html";
 		var fname = path.join(process.cwd(), uri);
 		fs.exists(fname, function(exists) {
 			if (exists) {
@@ -77,7 +89,7 @@ var httpServer = http.createServer(
 				if (params.length >= 2) { //REST Request
 					console.log("Peticion REST: "+uri);
 					var val1 = parseFloat(params[1]);
-					var result = simular(params[0], val1);
+					var result = leerSensores(params[0], val1);
 					response.writeHead(200, {"Content-Type": "text/html"});
 					response.write(result.toString());
 					response.end();
