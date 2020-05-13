@@ -26,9 +26,32 @@
 			var sensor = document.getElementById("sensores").value;
 			socket.emit('valores-captados',{sensor: sensor, valor : val1});
 		}
-			
-			httpRequest.open("GET", url, true);
-			httpRequest.send(null);
+
+				
+		socket.on('my-address', function(data) {
+			var d = new Date();
+			socket.emit('obtener-registro',{sensor: 'temperatura'});	
+		});
+
+		
+		socket.on('obtener-registro',function(data){
+			actualizarLista(data);
+		});
+
+
+
+		function actualizarLista(usuarios){
+			var listContainer = document.getElementById('resultados');
+			listContainer.innerHTML = '';
+			var listElement = document.createElement('ul');
+			listContainer.appendChild(listElement);
+			var num = usuarios.length;
+			for(var i=0; i<num; i++) {
+	            var listItem = document.createElement('li');
+	            listItem.innerHTML = JSON.stringify(usuarios[i]);
+	            listElement.appendChild(listItem);
+			}
+	    }
 
 	</script>
 </html>

@@ -97,7 +97,8 @@ MongoClient.connect("mongodb://localhost:27017/", function(err, db){
 	io.sockets.on('connection', function(u){
 		users.push({address:u.request.connection.remoteAddress, port:u.request.connection.remotePort})
 		console.log('New user from: '+u.request.connection.remoteAddress + ':' + u.request.connection.remotePort);
-
+		
+		u.emit('my-address', {host:u.request.connection.remoteAddress, port:u.request.connection.remotePort});
 		u.emit('valoresSensores', {
 			temperatura: TEMP_ACTUAL,
 			luminosidad: LUM_ACTUAL,
@@ -107,14 +108,16 @@ MongoClient.connect("mongodb://localhost:27017/", function(err, db){
 
 		u.on('Aire-Acondicionado',function(){
 			aireAcondicionado = !aireAcondicionado;
-			//collection.insert({estadoAireAcondicionado: aireAcondicionado }, {safe:true}, function(err, result) {});
+			collection.insert({estadoAireAcondicionado: aireAcondicionado }, {safe:true}, function(err, result) {});
 			actualizarValoresUsuarios();
+			obtenerRegistro() //Actualizamos el registro de la pagina de los sensores
 		})
 
 		u.on('persiana',function(){
 			persiana = !persiana;
-			//collection.insert({estadoPersiana: persiana }, {safe:true}, function(err, result) {});
+			collection.insert({estadoPersiana: persiana }, {safe:true}, function(err, result) {});
 			actualizarValoresUsuarios();
+			obtenerRegistro() //Actualizamos el registro de la pagina de los sensores
 		})
 
 		u.on('valores-captados',function(data){
@@ -130,12 +133,30 @@ MongoClient.connect("mongodb://localhost:27017/", function(err, db){
 			}
 
 			actualizarValoresUsuarios();
+			collection.insert(data, {safe:true}, function(err, result) {});
+			obtenerRegistro()
 		})
+
+		u.on('obtener-registro',function(data){
+			obtenerRegistro(data);
+		});
 
 		u.on('disconnect',function(){
 			console.log("El cliente "+u.request.connection.remoteAddress+" se va a desconectar");
 			});
+
+
+		function obtenerRegistro()
+		{
+			collection.find().toArray(function(err, results){
+				io.emit('obtener-registro',results);
+			});
+		}
+
+
 		});
+
+
 
 		function actualizarValoresUsuarios()
 		{
