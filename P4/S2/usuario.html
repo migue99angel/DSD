@@ -6,6 +6,16 @@
     <body>
         <h1> Página usuario </h1>
         <div id="resultados"></div>
+
+        <form onsubmit="apagarAireAcondicionado()">
+            <input type="submit" value="ON/OFF Aire Acondicionado"></input>
+        </form>
+
+        <form onsubmit="bajarPersiana()">
+            <input type="submit" value="ON/OFF Persiana"></input>
+        </form>
+
+
     </body>
     <script src="/socket.io/socket.io.js"></script>
     <script type="text/javascript">
@@ -14,8 +24,6 @@
         var socket = io.connect('http://localhost:8080');
 
         socket.on('valoresSensores',function(valores){
-            console.log('Llega');
-            console.log(valores);
             render(valores);
         });
 
@@ -24,6 +32,18 @@
             var p = '<p> Temperatura (ºC)  '+valores.temperatura+'\nLuminosidad (%) '+ valores.luminosidad+' Persiana : '+valores.estadoPersiana+' Estado Aire Acondicionado '+valores.estadoAireAcondicionado+'<p>';
                 
             document.getElementById('resultados').innerHTML = p;
+        }
+
+        function apagarAireAcondicionado()
+        {
+            socket.emit('Aire-Acondicionado')
+            return false;
+        }
+
+        function bajarPersiana()
+        {
+            socket.emit('persiana')
+            return false;
         }
 
     </script>

@@ -4,6 +4,8 @@ var fs = require("fs");
 var path = require("path");
 var socketio = require("socket.io");
 var mimeTypes = { "html": "text/html", "jpeg": "image/jpeg", "jpg": "image/jpeg", "png": "image/png", "js": "text/javascript", "css": "text/css", "swf": "application/x-shockwave-flash"};
+var MongoClient = require('mongodb').MongoClient;
+var MongoServer = require('mongodb').Server;
 
 var LUM_ACTUAL = 50
 var TEMP_ACTUAL = 25
@@ -14,21 +16,6 @@ var UMBRAL_LUM = 20
 var persiana = false  //false bajada - true subida 
 var aireAcondicionado = false  //false apagado - true encendido
 
-function leerSensores(operacion, val1)
-{
-    if (operacion=="temperatura")
-    {
-		TEMP_ACTUAL = val1
-        agente(operacion)
-    }
-    else if (operacion == "luminosidad")
-    {
-		LUM_ACTUAL = val1
-        agente(operacion)
-	}
-	
-	actualizarValoresUsuarios();
-}
 
 function agente(operacion)
 {
@@ -84,8 +71,6 @@ var httpServer = http.createServer(
 				var params = uri.split("/");
 				if (params.length >= 2) { //REST Request
 					console.log("Peticion REST: "+uri);
-					var val1 = parseFloat(params[1]);
-					leerSensores(params[0], val1);
 					response.writeHead(200, {"Content-Type": "text/html"});
 					response.end();
 				}
@@ -97,39 +82,72 @@ var httpServer = http.createServer(
 				}
 			}
 		});		
-	}
-);
-
-
-
-console.log("Servicio HTTP iniciado");
-var io = socketio.listen(httpServer);
-var users = new Array();
-io.sockets.on('connection', function(u){
-	users.push({address:u.request.connection.remoteAddress, port:u.request.connection.remotePort})
-	console.log('New user from: '+u.request.connection.remoteAddress + ':' + u.request.connection.remotePort);
-
-	u.emit('valoresSensores', {
-		temperatura: TEMP_ACTUAL,
-		luminosidad: LUM_ACTUAL,
-		estadoAireAcondicionado: aireAcondicionado,
-		estadoPersiana: persiana
 	});
 
-	u.on('disconnect',function(){
-		console.log("El cliente "+u.request.connection.remoteAddress+" se va a desconectar");
-	})
+
+MongoClient.connect("mongodb://localhost:27017/", function(err, db){
+	httpServer.listen(8080);
+	console.log("Servicio HTTP iniciado");
+	var io = socketio.listen(httpServer);
+	var users = new Array();
+	var dbo = db.db("pruebaBaseDatos");
+
+	dbo.createCollection("registroCambios", function(err, collection){
+
+	io.sockets.on('connection', function(u){
+		users.push({address:u.request.connection.remoteAddress, port:u.request.connection.remotePort})
+		console.log('New user from: '+u.request.connection.remoteAddress + ':' + u.request.connection.remotePort);
+
+		u.emit('valoresSensores', {
+			temperatura: TEMP_ACTUAL,
+			luminosidad: LUM_ACTUAL,
+			estadoAireAcondicionado: aireAcondicionado,
+			estadoPersiana: persiana
+		});
+
+		u.on('Aire-Acondicionado',function(){
+			aireAcondicionado = !aireAcondicionado;
+			//collection.insert({estadoAireAcondicionado: aireAcondicionado }, {safe:true}, function(err, result) {});
+			actualizarValoresUsuarios();
+		})
+
+		u.on('persiana',function(){
+			persiana = !persiana;
+			//collection.insert({estadoPersiana: persiana }, {safe:true}, function(err, result) {});
+			actualizarValoresUsuarios();
+		})
+
+		u.on('valores-captados',function(data){
+			if(data.sensor == 'temperatura')
+			{
+				TEMP_ACTUAL = data.valor;
+				agente('temperatura')
+
+			}else if(data.sensor == 'luminosidad')
+			{
+				LUM_ACTUAL = data.valor;
+				agente('luminosidad')
+			}
+
+			actualizarValoresUsuarios();
+		})
+
+		u.on('disconnect',function(){
+			console.log("El cliente "+u.request.connection.remoteAddress+" se va a desconectar");
+			});
+		});
+
+		function actualizarValoresUsuarios()
+		{
+			io.sockets.emit('valoresSensores', {
+				temperatura: TEMP_ACTUAL,
+				luminosidad: LUM_ACTUAL,
+				estadoAireAcondicionado: aireAcondicionado,
+				estadoPersiana: persiana
+			});
+		}
+	});
 });
 
-function actualizarValoresUsuarios()
-{
-	io.sockets.emit('valoresSensores', {
-		temperatura: TEMP_ACTUAL,
-		luminosidad: LUM_ACTUAL,
-		estadoAireAcondicionado: aireAcondicionado,
-		estadoPersiana: persiana
-	});
-}
-
-httpServer.listen(8080);
+	
 

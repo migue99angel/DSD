@@ -14,23 +14,21 @@
 			<input type="submit" value="Simular" />
 		</form>
 		<span id="resul"></span>
+		<span id="resultados"></span>
 	</body>
+	<script src="/socket.io/socket.io.js"></script>
 	<script type="text/javascript">
 		var serviceURL = document.URL;
+		var socket = io.connect(serviceURL);
+
 		function enviar() {
 			var val1 = document.getElementById("val1").value;
 			var sensor = document.getElementById("sensores").value;
+			socket.emit('valores-captados',{sensor: sensor, valor : val1});
+		}
 			
-			var url = serviceURL+"/"+sensor+"/"+val1;
-			var httpRequest = new XMLHttpRequest();
-			httpRequest.onreadystatechange = function() {
-		    	if (httpRequest.readyState === 4){
-		        	var resultado = document.getElementById("resul");
-		        	resultado.innerHTML = httpRequest.responseText;
-		        }
-		    };
 			httpRequest.open("GET", url, true);
 			httpRequest.send(null);
-		}
+
 	</script>
 </html>
