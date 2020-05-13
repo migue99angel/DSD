@@ -9,6 +9,22 @@
     </body>
     <script src="/socket.io/socket.io.js"></script>
     <script type="text/javascript">
-    
+
+        var serviceURL = document.URL;
+        var socket = io.connect('http://localhost:8080');
+
+        socket.on('valoresSensores',function(valores){
+            console.log('Llega');
+            console.log(valores);
+            render(valores);
+        });
+
+        function render(valores)
+        {
+            var p = '<p> Temperatura (ºC)  '+valores.temperatura+'\nLuminosidad (%) '+ valores.luminosidad+' Persiana : '+valores.estadoPersiana+' Estado Aire Acondicionado '+valores.estadoAireAcondicionado+'<p>';
+                
+            document.getElementById('resultados').innerHTML = p;
+        }
+
     </script>
 </html>

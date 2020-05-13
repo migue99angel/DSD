@@ -2,10 +2,11 @@ var http = require("http");
 var url = require("url");
 var fs = require("fs");
 var path = require("path");
+var socketio = require("socket.io");
 var mimeTypes = { "html": "text/html", "jpeg": "image/jpeg", "jpg": "image/jpeg", "png": "image/png", "js": "text/javascript", "css": "text/css", "swf": "application/x-shockwave-flash"};
 
-var LUM_ACTUAL
-var TEMP_ACTUAL
+var LUM_ACTUAL = 50
+var TEMP_ACTUAL = 25
 
 var UMBRAL_TEMP = 30
 var UMBRAL_LUM = 20 
@@ -17,15 +18,16 @@ function leerSensores(operacion, val1)
 {
     if (operacion=="temperatura")
     {
-        TEMP_ACTUAL = val1
-        return agente(operacion)
+		TEMP_ACTUAL = val1
+        agente(operacion)
     }
     else if (operacion == "luminosidad")
     {
-        LUM_ACTUAL = val1
-        return agente(operacion)
-    }
-
+		LUM_ACTUAL = val1
+        agente(operacion)
+	}
+	
+	actualizarValoresUsuarios();
 }
 
 function agente(operacion)
@@ -35,12 +37,10 @@ function agente(operacion)
         if (TEMP_ACTUAL > UMBRAL_TEMP)
         {
             aireAcondicionado = true
-            return "Encendido aire acondicionado"
         }
         else
         {
             aireAcondicionado = false
-            return "Apagado aire acondicionado"
 
         }
     } else if (operacion == "luminosidad")
@@ -49,14 +49,10 @@ function agente(operacion)
         if (LUM_ACTUAL < UMBRAL_LUM)
         {
             persiana = false
-            return "Persiana bajada"
-
         }
-        else if (LUM_ACTUAL < UMBRAL_LUM)
+        else if (LUM_ACTUAL > UMBRAL_LUM)
         {
             persiana = true
-            return "Persiana subida"
-
         }
     }
 }
@@ -89,9 +85,8 @@ var httpServer = http.createServer(
 				if (params.length >= 2) { //REST Request
 					console.log("Peticion REST: "+uri);
 					var val1 = parseFloat(params[1]);
-					var result = leerSensores(params[0], val1);
+					leerSensores(params[0], val1);
 					response.writeHead(200, {"Content-Type": "text/html"});
-					response.write(result.toString());
 					response.end();
 				}
 				else {
@@ -104,5 +99,37 @@ var httpServer = http.createServer(
 		});		
 	}
 );
-httpServer.listen(8080);
+
+
+
 console.log("Servicio HTTP iniciado");
+var io = socketio.listen(httpServer);
+var users = new Array();
+io.sockets.on('connection', function(u){
+	users.push({address:u.request.connection.remoteAddress, port:u.request.connection.remotePort})
+	console.log('New user from: '+u.request.connection.remoteAddress + ':' + u.request.connection.remotePort);
+
+	u.emit('valoresSensores', {
+		temperatura: TEMP_ACTUAL,
+		luminosidad: LUM_ACTUAL,
+		estadoAireAcondicionado: aireAcondicionado,
+		estadoPersiana: persiana
+	});
+
+	u.on('disconnect',function(){
+		console.log("El cliente "+u.request.connection.remoteAddress+" se va a desconectar");
+	})
+});
+
+function actualizarValoresUsuarios()
+{
+	io.sockets.emit('valoresSensores', {
+		temperatura: TEMP_ACTUAL,
+		luminosidad: LUM_ACTUAL,
+		estadoAireAcondicionado: aireAcondicionado,
+		estadoPersiana: persiana
+	});
+}
+
+httpServer.listen(8080);
+
