@@ -99,6 +99,9 @@ MongoClient.connect("mongodb://localhost:27017/", function(err, db){
 		console.log('New user from: '+u.request.connection.remoteAddress + ':' + u.request.connection.remotePort);
 		
 		u.emit('my-address', {host:u.request.connection.remoteAddress, port:u.request.connection.remotePort});
+
+		io.emit('usuarios-activos',users);
+
 		u.emit('valoresSensores', {
 			temperatura: TEMP_ACTUAL,
 			luminosidad: LUM_ACTUAL,
@@ -143,7 +146,9 @@ MongoClient.connect("mongodb://localhost:27017/", function(err, db){
 
 		u.on('disconnect',function(){
 			console.log("El cliente "+u.request.connection.remoteAddress+" se va a desconectar");
-			});
+			users = removeItemFromArr( users, {address:u.request.connection.remoteAddress, port:u.request.connection.remotePort} );
+			io.emit('usuarios-activos',users);
+		});
 
 
 		function obtenerRegistro()
@@ -156,7 +161,20 @@ MongoClient.connect("mongodb://localhost:27017/", function(err, db){
 
 		});
 
+		function removeItemFromArr ( arr, item ) {
+			var i = -1;
 
+			for(var j = 0; j < arr.length; j++)
+				if(arr[j].port == item.port)
+					i = j;
+
+			console.log(i);
+			if ( i != -1 ) {
+				arr.splice( i, 1 );
+			}
+
+			return arr;
+		}
 
 		function actualizarValoresUsuarios()
 		{

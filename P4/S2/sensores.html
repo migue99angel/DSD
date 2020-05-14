@@ -13,20 +13,27 @@
 			</select><br />
 			<input type="submit" value="Simular" />
 		</form>
+		<span id="actuadores"></span>
+		<a href="usuario.html">Página usuario</a>
 		<span id="resul"></span>
-		<span id="resultados"></span>
+		<h4>Registro</h4>
+		<div id="resultados"></div>
+		<h4>Usuarios activos</h4>
+		<div id="usuarios"></div>
 	</body>
 	<script src="/socket.io/socket.io.js"></script>
 	<script type="text/javascript">
 		var serviceURL = document.URL;
-		var socket = io.connect(serviceURL);
+		var socket = io.connect('http://localhost:8080');
 
 		function enviar() {
 			var val1 = document.getElementById("val1").value;
 			var sensor = document.getElementById("sensores").value;
 			socket.emit('valores-captados',{sensor: sensor, valor : val1});
 		}
-
+		socket.on('usuarios-activos',function(data){
+			actualizarLista(data,'usuarios');
+		})
 				
 		socket.on('my-address', function(data) {
 			var d = new Date();
@@ -35,20 +42,29 @@
 
 		
 		socket.on('obtener-registro',function(data){
-			actualizarLista(data);
+			actualizarLista(data,'resultados');
 		});
 
+		socket.on('valoresSensores',function(valores){
+            render(valores);
+        });
 
+        function render(valores)
+        {
+            var p = '<p> Temperatura (ºC)  '+valores.temperatura+'\nLuminosidad (%) '+ valores.luminosidad+' Persiana : '+valores.estadoPersiana+' Estado Aire Acondicionado '+valores.estadoAireAcondicionado+'<p>';
+                
+            document.getElementById('actuadores').innerHTML = p;
+        }
 
-		function actualizarLista(usuarios){
-			var listContainer = document.getElementById('resultados');
+		function actualizarLista(valores,identificador){
+			var listContainer = document.getElementById(identificador);
 			listContainer.innerHTML = '';
 			var listElement = document.createElement('ul');
 			listContainer.appendChild(listElement);
-			var num = usuarios.length;
+			var num = valores.length;
 			for(var i=0; i<num; i++) {
 	            var listItem = document.createElement('li');
-	            listItem.innerHTML = JSON.stringify(usuarios[i]);
+	            listItem.innerHTML = JSON.stringify(valores[i]);
 	            listElement.appendChild(listItem);
 			}
 	    }
