@@ -15,6 +15,10 @@
             <input type="submit" value="ON/OFF Persiana"></input>
         </form>
 
+        <form onsubmit="apagarAgente()">
+            <input type="submit" value="ON/OFF Agente Domótico"></input>
+        </form>
+
 
     </body>
     <script src="/socket.io/socket.io.js"></script>
@@ -29,20 +33,26 @@
 
         function render(valores)
         {
-            var p = '<p> Temperatura (ºC)  '+valores.temperatura+'\nLuminosidad (%) '+ valores.luminosidad+' Persiana : '+valores.estadoPersiana+' Estado Aire Acondicionado '+valores.estadoAireAcondicionado+'<p>';
+            var p = '<p> Temperatura (ºC)  '+valores.temperatura+'\nLuminosidad (%) '+ valores.luminosidad+' Persiana : '+valores.estadoPersiana+' Estado Aire Acondicionado '+valores.estadoAireAcondicionado+' Estado del agente domótico : '+valores.estadoAgenteDomotico+'<p>';
                 
             document.getElementById('resultados').innerHTML = p;
         }
 
+        function apagarAgente()
+        {
+            socket.emit('estado-agente');
+            return false;
+        }
+
         function apagarAireAcondicionado()
         {
-            socket.emit('Aire-Acondicionado')
+            socket.emit('Aire-Acondicionado');
             return false;
         }
 
         function bajarPersiana()
         {
-            socket.emit('persiana')
+            socket.emit('persiana');
             return false;
         }
 

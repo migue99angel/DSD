@@ -15,33 +15,36 @@ var UMBRAL_LUM = 20
 
 var persiana = false  //false bajada - true subida 
 var aireAcondicionado = false  //false apagado - true encendido
+var agenteDomotico = true //Variable que apaga o enciende el agente domotico
 
 
-function agente(operacion)
+function agente()
 {
-    if (operacion=="temperatura")
-    {
-        if (TEMP_ACTUAL > UMBRAL_TEMP)
-        {
-            aireAcondicionado = true
-        }
-        else
-        {
-            aireAcondicionado = false
+	if(agenteDomotico)
+	{
 
-        }
-    } else if (operacion == "luminosidad")
-    {
+		if (TEMP_ACTUAL > UMBRAL_TEMP)
+		{
+			aireAcondicionado = true
+		}
+		else
+		{
+			aireAcondicionado = false
 
-        if (LUM_ACTUAL < UMBRAL_LUM)
-        {
-            persiana = false
-        }
-        else if (LUM_ACTUAL > UMBRAL_LUM)
-        {
-            persiana = true
-        }
-    }
+		}
+
+	
+
+		if (LUM_ACTUAL < UMBRAL_LUM)
+		{
+			persiana = false
+		}
+		else if (LUM_ACTUAL > UMBRAL_LUM)
+		{
+			persiana = true
+		}
+		
+	}
 }
 
 var httpServer = http.createServer(
@@ -106,7 +109,8 @@ MongoClient.connect("mongodb://localhost:27017/", function(err, db){
 			temperatura: TEMP_ACTUAL,
 			luminosidad: LUM_ACTUAL,
 			estadoAireAcondicionado: aireAcondicionado,
-			estadoPersiana: persiana
+			estadoPersiana: persiana,
+			estadoAgenteDomotico: agenteDomotico
 		});
 
 		u.on('Aire-Acondicionado',function(){
@@ -127,12 +131,12 @@ MongoClient.connect("mongodb://localhost:27017/", function(err, db){
 			if(data.sensor == 'temperatura')
 			{
 				TEMP_ACTUAL = data.valor;
-				agente('temperatura')
+				agente()
 
 			}else if(data.sensor == 'luminosidad')
 			{
 				LUM_ACTUAL = data.valor;
-				agente('luminosidad')
+				agente()
 			}
 
 			actualizarValoresUsuarios();
@@ -143,6 +147,14 @@ MongoClient.connect("mongodb://localhost:27017/", function(err, db){
 		u.on('obtener-registro',function(data){
 			obtenerRegistro(data);
 		});
+
+
+		u.on('estado-agente',function(){
+			agenteDomotico = !agenteDomotico;
+			agente();
+			actualizarValoresUsuarios();
+		})
+
 
 		u.on('disconnect',function(){
 			console.log("El cliente "+u.request.connection.remoteAddress+" se va a desconectar");
@@ -168,7 +180,6 @@ MongoClient.connect("mongodb://localhost:27017/", function(err, db){
 				if(arr[j].port == item.port)
 					i = j;
 
-			console.log(i);
 			if ( i != -1 ) {
 				arr.splice( i, 1 );
 			}
@@ -182,7 +193,8 @@ MongoClient.connect("mongodb://localhost:27017/", function(err, db){
 				temperatura: TEMP_ACTUAL,
 				luminosidad: LUM_ACTUAL,
 				estadoAireAcondicionado: aireAcondicionado,
-				estadoPersiana: persiana
+				estadoPersiana: persiana,
+				estadoAgenteDomotico: agenteDomotico
 			});
 		}
 	});

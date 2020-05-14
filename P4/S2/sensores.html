@@ -16,10 +16,27 @@
 		<span id="actuadores"></span>
 		<a href="usuario.html">Página usuario</a>
 		<span id="resul"></span>
-		<h4>Registro</h4>
-		<div id="resultados"></div>
-		<h4>Usuarios activos</h4>
-		<div id="usuarios"></div>
+		<div id="container-register">
+			<h4>Registro</h4>
+			<div id="resultados"></div>
+		</div>
+		<div id="container-user">
+			<h4>Usuarios activos</h4>
+			<span id="usuarios"></span>
+		</div>
+		<style type="text/css">
+			#container-user{
+				width: 50%;
+				display: inline-block;
+				position: absolute;
+				margin-left: 50%
+			}
+			#container-register{
+				width: 50%;
+				position: absolute;
+				display: inline-block;
+			}
+		</style>
 	</body>
 	<script src="/socket.io/socket.io.js"></script>
 	<script type="text/javascript">
@@ -51,7 +68,7 @@
 
         function render(valores)
         {
-            var p = '<p> Temperatura (ºC)  '+valores.temperatura+'\nLuminosidad (%) '+ valores.luminosidad+' Persiana : '+valores.estadoPersiana+' Estado Aire Acondicionado '+valores.estadoAireAcondicionado+'<p>';
+            var p = '<p> Temperatura (ºC)  '+valores.temperatura+'\nLuminosidad (%) '+ valores.luminosidad+' Persiana : '+valores.estadoPersiana+' Estado Aire Acondicionado '+valores.estadoAireAcondicionado+' Estado del agente domótico : '+valores.estadoAgenteDomotico+'<p>';
                 
             document.getElementById('actuadores').innerHTML = p;
         }
