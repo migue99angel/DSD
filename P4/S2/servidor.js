@@ -103,10 +103,8 @@ MongoClient.connect("mongodb://localhost:27017/", function(err, db){
 	dbo.createCollection("registroCambios", function(err, collection){
 
 	io.sockets.on('connection', function(u){
-		users.push({address:u.request.connection.remoteAddress, port:u.request.connection.remotePort})
-		console.log('New user from: '+u.request.connection.remoteAddress + ':' + u.request.connection.remotePort);
-		
-		u.emit('my-address', {host:u.request.connection.remoteAddress, port:u.request.connection.remotePort});
+		users.push({address:u.request.connection.remoteAddress, port:u.request.connection.remotePort});		
+		obtenerRegistro();
 
 		io.emit('usuarios-activos',users);
 
@@ -121,15 +119,18 @@ MongoClient.connect("mongodb://localhost:27017/", function(err, db){
 
 		u.on('Aire-Acondicionado',function(){
 			aireAcondicionado = !aireAcondicionado;
-			collection.insert({estadoAireAcondicionado: aireAcondicionado }, {safe:true}, function(err, result) {});
-			actualizarValoresUsuarios();
+			var mensaje;
+			if(aireAcondicionado) mensaje = 'El usuario ha encendido el aire acondicionado manualmente' 
+			else mensaje = 'El usuario ha apagado el aire acondicionado manualmente'
+			actualizarValoresUsuarios(mensaje);
 			obtenerRegistro() //Actualizamos el registro de la pagina de los sensores
 		})
 
 		u.on('persiana',function(){
 			persiana = !persiana;
-			collection.insert({estadoPersiana: persiana }, {safe:true}, function(err, result) {});
-			actualizarValoresUsuarios();
+			if(persiana) mensaje = 'El usuario ha subido la persiana manualmente' 
+			else mensaje = 'El usuario ha bajado la persiana manualmente'
+			actualizarValoresUsuarios(mensaje);
 			obtenerRegistro() //Actualizamos el registro de la pagina de los sensores
 		})
 
@@ -148,8 +149,8 @@ MongoClient.connect("mongodb://localhost:27017/", function(err, db){
 			obtenerRegistro()
 		})
 
-		u.on('obtener-registro',function(data){
-			obtenerRegistro(data);
+		u.on('obtener-registro',function(){
+			obtenerRegistro();
 		});
 
 

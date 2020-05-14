@@ -50,15 +50,11 @@
 			var sensor = document.getElementById("sensores").value;
 			socket.emit('valores-captados',{sensor: sensor, valor : val1, time : d});
 		}
+
 		socket.on('usuarios-activos',function(data){
 			actualizarLista(data,'usuarios');
 		})
-				
-		socket.on('my-address', function(data) {
-			socket.emit('obtener-registro',{sensor: 'temperatura'});	
-		});
 
-		
 		socket.on('obtener-registro',function(data){
 			actualizarLista(data,'resultados');
 		});
@@ -69,7 +65,7 @@
 
         function render(valores)
         {
-            var p = '<p> Temperatura (ºC)  '+valores.temperatura+'\nLuminosidad (%) '+ valores.luminosidad+' Persiana : '+valores.estadoPersiana+' Estado Aire Acondicionado '+valores.estadoAireAcondicionado+' Estado del agente domótico : '+valores.estadoAgenteDomotico+'<p>';
+            var p = '<p> Temperatura (ºC)  '+valores.temperatura+'<br/>Luminosidad (%) '+ valores.luminosidad+'<br/>Persiana : '+valores.estadoPersiana+'<br/>Estado Aire Acondicionado '+valores.estadoAireAcondicionado+'<br/>Estado del agente domótico : '+valores.estadoAgenteDomotico+'<p>';
             var mensajes = '<p>'+valores.mensajesAgente+'</p>';  
 			document.getElementById('actuadores').innerHTML = p;
 			document.getElementById('mensajes').innerHTML = mensajes;
