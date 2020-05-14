@@ -14,6 +14,7 @@
 			<input type="submit" value="Simular" />
 		</form>
 		<span id="actuadores"></span>
+		<span id="mensajes"></span>
 		<a href="usuario.html">Página usuario</a>
 		<span id="resul"></span>
 		<div id="container-register">
@@ -44,16 +45,16 @@
 		var socket = io.connect('http://localhost:8080');
 
 		function enviar() {
+			var d = new Date();
 			var val1 = document.getElementById("val1").value;
 			var sensor = document.getElementById("sensores").value;
-			socket.emit('valores-captados',{sensor: sensor, valor : val1});
+			socket.emit('valores-captados',{sensor: sensor, valor : val1, time : d});
 		}
 		socket.on('usuarios-activos',function(data){
 			actualizarLista(data,'usuarios');
 		})
 				
 		socket.on('my-address', function(data) {
-			var d = new Date();
 			socket.emit('obtener-registro',{sensor: 'temperatura'});	
 		});
 
@@ -69,8 +70,9 @@
         function render(valores)
         {
             var p = '<p> Temperatura (ºC)  '+valores.temperatura+'\nLuminosidad (%) '+ valores.luminosidad+' Persiana : '+valores.estadoPersiana+' Estado Aire Acondicionado '+valores.estadoAireAcondicionado+' Estado del agente domótico : '+valores.estadoAgenteDomotico+'<p>';
-                
-            document.getElementById('actuadores').innerHTML = p;
+            var mensajes = '<p>'+valores.mensajesAgente+'</p>';  
+			document.getElementById('actuadores').innerHTML = p;
+			document.getElementById('mensajes').innerHTML = mensajes;
         }
 
 		function actualizarLista(valores,identificador){

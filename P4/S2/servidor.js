@@ -22,27 +22,32 @@ function agente()
 {
 	if(agenteDomotico)
 	{
+		var mensajes = Array();
 
-		if (TEMP_ACTUAL > UMBRAL_TEMP)
+		if (TEMP_ACTUAL > UMBRAL_TEMP && !aireAcondicionado)
 		{
 			aireAcondicionado = true
+			mensajes.push("El agente ha encendido el aire acondicionado porque la temperatura es muy alta\n");
 		}
-		else
+		else if (TEMP_ACTUAL < UMBRAL_TEMP && aireAcondicionado)
 		{
 			aireAcondicionado = false
-
+			mensajes.push("El agente ha apagado el aire acondicionado porque la temperatura es inferior al umbral\n");
 		}
 
-	
-
-		if (LUM_ACTUAL < UMBRAL_LUM)
+		if (LUM_ACTUAL < UMBRAL_LUM && !persiana)
 		{
-			persiana = false
-		}
-		else if (LUM_ACTUAL > UMBRAL_LUM)
-		{
+			mensajes.push("El agente ha subido la persiana porque la luminosidad es inferior al umbral\n");
 			persiana = true
 		}
+
+		if (TEMP_ACTUAL > UMBRAL_TEMP && LUM_ACTUAL > UMBRAL_LUM)
+		{
+			persiana = false
+			mensajes.push("El agente ha bajado la persiana porque la temperatura y la luminosidad son muy altas\n");
+		}
+		
+		return mensajes;
 		
 	}
 }
@@ -110,7 +115,8 @@ MongoClient.connect("mongodb://localhost:27017/", function(err, db){
 			luminosidad: LUM_ACTUAL,
 			estadoAireAcondicionado: aireAcondicionado,
 			estadoPersiana: persiana,
-			estadoAgenteDomotico: agenteDomotico
+			estadoAgenteDomotico: agenteDomotico,
+			mensajesAgente : 'El agente no ha actuado todavía' 
 		});
 
 		u.on('Aire-Acondicionado',function(){
@@ -131,15 +137,13 @@ MongoClient.connect("mongodb://localhost:27017/", function(err, db){
 			if(data.sensor == 'temperatura')
 			{
 				TEMP_ACTUAL = data.valor;
-				agente()
 
 			}else if(data.sensor == 'luminosidad')
 			{
 				LUM_ACTUAL = data.valor;
-				agente()
 			}
-
-			actualizarValoresUsuarios();
+			var mensajes = agente();
+			actualizarValoresUsuarios(mensajes);
 			collection.insert(data, {safe:true}, function(err, result) {});
 			obtenerRegistro()
 		})
@@ -151,8 +155,8 @@ MongoClient.connect("mongodb://localhost:27017/", function(err, db){
 
 		u.on('estado-agente',function(){
 			agenteDomotico = !agenteDomotico;
-			agente();
-			actualizarValoresUsuarios();
+			var mensajes = agente();
+			actualizarValoresUsuarios(mensajes);
 		})
 
 
@@ -187,14 +191,15 @@ MongoClient.connect("mongodb://localhost:27017/", function(err, db){
 			return arr;
 		}
 
-		function actualizarValoresUsuarios()
+		function actualizarValoresUsuarios(mensajes)
 		{
 			io.sockets.emit('valoresSensores', {
 				temperatura: TEMP_ACTUAL,
 				luminosidad: LUM_ACTUAL,
 				estadoAireAcondicionado: aireAcondicionado,
 				estadoPersiana: persiana,
-				estadoAgenteDomotico: agenteDomotico
+				estadoAgenteDomotico: agenteDomotico,
+				mensajesAgente : mensajes
 			});
 		}
 	});

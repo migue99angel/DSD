@@ -6,7 +6,7 @@
     <body>
         <h1> Página usuario </h1>
         <div id="resultados"></div>
-
+        <div id="mensajes"></div>
         <form onsubmit="apagarAireAcondicionado()">
             <input type="submit" value="ON/OFF Aire Acondicionado"></input>
         </form>
@@ -34,8 +34,9 @@
         function render(valores)
         {
             var p = '<p> Temperatura (ºC)  '+valores.temperatura+'\nLuminosidad (%) '+ valores.luminosidad+' Persiana : '+valores.estadoPersiana+' Estado Aire Acondicionado '+valores.estadoAireAcondicionado+' Estado del agente domótico : '+valores.estadoAgenteDomotico+'<p>';
-                
-            document.getElementById('resultados').innerHTML = p;
+            var mensajes = '<p>'+valores.mensajesAgente+'</p>';  
+			document.getElementById('resultados').innerHTML = p;
+			document.getElementById('mensajes').innerHTML = mensajes;
         }
 
         function apagarAgente()
