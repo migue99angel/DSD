@@ -11,12 +11,14 @@ var LUM_ACTUAL = 50
 var TEMP_ACTUAL = 25
 var HUM_ACTUAL = 50
 var SUCIEDAD_ACTUAL = 0
+var VIENTO_ACTUAL;
 
 var UMBRAL_TEMP = 30
 var UMBRAL_TEMP_MIN = 10
 var UMBRAL_LUM = 20 
 var UMBRAL_HUMEDAD = 20
 var UMBRAL_SUCIEDAD = 20
+var UMBRAL_VIENTO = 0
 
 var persiana = false  //false bajada - true subida 
 var aireAcondicionado = false  //false apagado - true encendido
@@ -24,7 +26,7 @@ var calefaccion = false //false apagado - true encendido
 var robotAspirador = false	//false apagado - true encendido
 var cerraduraInteligente = false	//false apagado - true encendido
 var humidificador = false //false apagado - true encendido
-var ventana = false //false cerrrada - true abierta
+var ventana = true //false cerrrada - true abierta
 var agenteDomotico = true //Variable que apaga o enciende el agente domotico
 
 
@@ -85,10 +87,16 @@ function agente()
 			ventana = false;
 			mensajes.push("El agente ha cerrado la ventana porque hay algún dispositivo de control de temperatura en uso </br>");
 
-		}else if (!aireAcondicionado && !calefaccion && !ventana)
+		}else if (!aireAcondicionado && !calefaccion && !ventana && VIENTO_ACTUAL < UMBRAL_VIENTO)
 		{
 			ventana = true;
 			mensajes.push("El agente ha abierto la ventana porque no hay ningún dispositivo de control de temperatura en uso </br>");
+		}
+
+		if(VIENTO_ACTUAL > UMBRAL_VIENTO && ventana)
+		{
+			ventana = false;
+			mensajes.push("El agente ha cerrado la ventana porque la velocidad del viento es muy alta </br>");
 		}
 
 		if (LUM_ACTUAL < UMBRAL_LUM && !persiana)
@@ -191,6 +199,7 @@ MongoClient.connect("mongodb://localhost:27017/", function(err, db){
 			luminosidad: LUM_ACTUAL,
 			humedad: HUM_ACTUAL,
 			suciedad: SUCIEDAD_ACTUAL,
+			viento: VIENTO_ACTUAL,
 			estadoAireAcondicionado: aireAcondicionado,
 			estadoPersiana: persiana,
 			estadoAgenteDomotico: agenteDomotico,
@@ -334,6 +343,7 @@ MongoClient.connect("mongodb://localhost:27017/", function(err, db){
 				luminosidad: LUM_ACTUAL,
 				humedad: HUM_ACTUAL,
 				suciedad: SUCIEDAD_ACTUAL,
+				viento: VIENTO_ACTUAL,
 				estadoAireAcondicionado: aireAcondicionado,
 				estadoPersiana: persiana,
 				estadoAgenteDomotico: agenteDomotico,
@@ -345,8 +355,42 @@ MongoClient.connect("mongodb://localhost:27017/", function(err, db){
 				mensajesAgente : mensajes
 			});
 		}
+
+
+	var unirest = require("unirest");
+	var req = unirest("GET", "https://community-open-weather-map.p.rapidapi.com/weather");
+	
+	function peticionREST()
+	{
+		req.query({
+			"id": "2172797",
+			"units": "%22metric%22 or %22imperial%22",
+			"mode": "xml%2C html",
+			"q": "Motril"
+		});
+	
+		req.headers({
+			"x-rapidapi-host": "community-open-weather-map.p.rapidapi.com",
+			"x-rapidapi-key": "80654e5700mshd73d5e7ad6318d2p1e0fa8jsnc9321dd0b68f",
+			"useQueryString": true
+		});
+	
+	
+		req.end(function (res) {
+			if (res.error) throw new Error(res.error);
+	
+			VIENTO_ACTUAL = res.body.wind.speed;
+			var mensajes = agente();
+			actualizarValoresUsuarios(mensajes);
+		});
+	}
+	
+		setInterval(()=>peticionREST(),1000);
+
 	});
+
 });
 
 	
+
 
